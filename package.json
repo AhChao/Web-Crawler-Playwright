@@ -1,0 +1,14 @@
+{
+  "name": "web-crawler-playwright",
+  "version": "1.0.0",
+  "description": "A web crawler using Playwright to scrape and save website content as Markdown files.",
+  "main": "crawler.js",
+  "scripts": {
+    "start": "node crawler.js"
+  },
+  "author": "Steven Chao",
+  "license": "MIT",
+  "dependencies": {
+    "playwright": "^1.37.0"
+  }
+}

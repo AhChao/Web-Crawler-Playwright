@@ -131,3 +131,23 @@ crawl(startUrl).then(() => {
 - 請根據需求修改 `domain`、`startUrl` 和 `outputDir` 的值。
 - 確保有權限存取並寫入 `output` 資料夾。
 - 該範例僅供學習用途，請遵守目標網站的 `robots.txt` 和相關法律規範。
+
+---
+
+## 9. 環境設置與所需函式庫
+
+### 9.1 環境設置
+1. 確保已安裝 [Node.js](https://nodejs.org/)（建議使用 LTS 版本）。
+2. 初始化專案：
+    ```bash
+    npm init -y
+    ```
+3. 安裝所需函式庫：
+    ```bash
+    npm install playwright
+    ```
+
+### 9.2 所需函式庫
+- `playwright`: 用於瀏覽器自動化。
+- `fs`（內建模組）: 用於檔案系統操作。
+- `path`（內建模組）: 用於處理檔案路徑。
