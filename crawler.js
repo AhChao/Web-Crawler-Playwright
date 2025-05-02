@@ -11,16 +11,19 @@ function log(message) {
 
 async function crawl(url, baseDomain) {
     if (visitedUrls.has(url) || !url.includes(baseDomain)) {
+        log(`Skipping: ${url} (already visited or not in domain)`);
         return;
     }
 
     visitedUrls.add(url);
     log(`Crawling: ${url}`);
 
-    const browser = await chromium.launch();
-    const page = await browser.newPage();
-
+    let browser;
+    let links = [];
     try {
+        browser = await chromium.launch();
+        const page = await browser.newPage();
+
         await page.goto(url, { waitUntil: 'domcontentloaded' });
 
         // 抓取網頁內容
@@ -35,7 +38,7 @@ async function crawl(url, baseDomain) {
         fs.writeFileSync(filePath, markdownContent, 'utf8');
 
         // 抓取內部連結
-        const links = await page.$$eval('a', (anchors, baseDomain) => {
+        links = await page.$$eval('a', (anchors, baseDomain) => {
             return anchors
                 .map(a => a.href)
                 .filter(href => {
@@ -50,14 +53,17 @@ async function crawl(url, baseDomain) {
                 });
         }, baseDomain);
         log(`Found ${links.length} links on ${url}`);
-
-        for (const link of links) {
-            await crawl(link, baseDomain);
-        }
     } catch (error) {
         console.error(`[${new Date().toISOString()}] Error crawling ${url}:`, error);
     } finally {
-        await browser.close();
+        if (browser) {
+            await browser.close(); // 確保瀏覽器及時關閉
+        }
+
+        // 遞回訪問內部連結
+        for (const link of links) {
+            await crawl(link, baseDomain);
+        }
     }
 }
 
@@ -71,5 +77,5 @@ const baseDomain = new URL(startUrl).hostname;
 
 // 開始爬蟲
 crawl(startUrl, baseDomain).then(() => {
-    console.log('Crawling completed.');
+    log('Crawling completed.');
 });
