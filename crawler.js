@@ -1,15 +1,21 @@
 const { chromium } = require('playwright');
 const fs = require('fs');
-const { domain, startUrl, outputDir } = require('./config'); // 引入設定檔
+const { startUrl, outputDir } = require('./config'); // 移除 domain
 const visitedUrls = new Set(); // 已訪問的 URL 集合
 
-async function crawl(url) {
-    if (visitedUrls.has(url) || !url.includes(domain)) {
+// 格式化日志输出
+function log(message) {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] ${message}`);
+}
+
+async function crawl(url, baseDomain) {
+    if (visitedUrls.has(url) || !url.includes(baseDomain)) {
         return;
     }
 
     visitedUrls.add(url);
-    console.log(`Crawling: ${url}`);
+    log(`Crawling: ${url}`);
 
     const browser = await chromium.launch();
     const page = await browser.newPage();
@@ -29,24 +35,27 @@ async function crawl(url) {
         fs.writeFileSync(filePath, markdownContent, 'utf8');
 
         // 抓取內部連結
-        const links = await page.$$eval('a', (anchors, domain) =>
-            anchors
+        const links = await page.$$eval('a', (anchors, baseDomain) => {
+            return anchors
                 .map(a => a.href)
                 .filter(href => {
                     try {
                         const url = new URL(href);
-                        return url.origin.includes(domain);
+                        // Ensure the link's hostname matches the base domain
+                        return url.hostname === baseDomain;
                     } catch {
+                        // Ignore invalid URLs
                         return false;
                     }
-                })
-        , domain);
+                });
+        }, baseDomain);
+        log(`Found ${links.length} links on ${url}`);
 
         for (const link of links) {
-            await crawl(link);
+            await crawl(link, baseDomain);
         }
     } catch (error) {
-        console.error(`Error crawling ${url}:`, error);
+        console.error(`[${new Date().toISOString()}] Error crawling ${url}:`, error);
     } finally {
         await browser.close();
     }
@@ -57,7 +66,10 @@ if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir);
 }
 
+// 從 startUrl 提取基礎域名
+const baseDomain = new URL(startUrl).hostname;
+
 // 開始爬蟲
-crawl(startUrl).then(() => {
+crawl(startUrl, baseDomain).then(() => {
     console.log('Crawling completed.');
 });
