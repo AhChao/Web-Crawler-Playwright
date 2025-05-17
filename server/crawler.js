@@ -2,8 +2,17 @@ const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
 const TurndownService = require('turndown');
-const config = require('./config'); 
+// Import config file path but don't require it directly yet
+const configPath = path.join(__dirname, 'config.js');
 const visitedUrls = new Set(); 
+
+// Function to get fresh config on each call
+function getConfig() {
+    // Clear require cache for config.js
+    delete require.cache[require.resolve(configPath)];
+    // Return fresh config
+    return require(configPath);
+}
 
 function log(message) {
     const timestamp = new Date().toISOString();
@@ -12,6 +21,7 @@ function log(message) {
 
 // Function to save all visited links to a file
 function saveVisitedLinks(links) {
+    const config = getConfig();
     const filePath = path.join(config.outputDir, 'visitedLinks');
     const content = Array.from(links).join('\n');
     fs.writeFileSync(filePath, content, 'utf8');
@@ -42,6 +52,9 @@ async function crawl(url, baseDomain, urlsSet = visitedUrls) {
         const title = await page.title();
         const rawContent = await page.content();
         const timestamp = new Date().toISOString();
+
+        // Get fresh config
+        const config = getConfig();
 
         // Determine file extension and content based on fileFormat
         const fileFormat = config.fileFormat || 'markdown'; // Default to markdown if not specified
@@ -119,6 +132,10 @@ ${rawContent}
                 log(`Skipping link: ${link} (not in base domain)`);
                 continue; // link not in base domain
             }
+            
+            // Get fresh config for each link check
+            const config = getConfig();
+            
             if (!config.urlPattern.test(link)){
                 log(`Skipping link: ${link} (does not match urlPattern)`);
                 continue; // link does not match urlPattern
@@ -129,6 +146,7 @@ ${rawContent}
 }
 
 // 建立輸出資料夾
+const config = getConfig();
 if (!fs.existsSync(config.outputDir)) {
     fs.mkdirSync(config.outputDir, { recursive: true });
 }

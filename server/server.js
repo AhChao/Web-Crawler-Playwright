@@ -41,6 +41,31 @@ app.get('/api/get-config', (req, res) => {
     }
 });
 
+// Add a route for choosing output directory
+app.post('/api/select-dir', (req, res) => {
+    try {
+        const { dirName } = req.body;
+        
+        // Create the output directory if it doesn't exist
+        const outputPath = path.join(path.dirname(__dirname), 'output', dirName);
+        if (!fs.existsSync(outputPath)) {
+            fs.mkdirSync(outputPath, { recursive: true });
+        }
+        
+        res.json({ 
+            success: true,
+            outputPath: outputPath,
+            relativePath: path.join('output', dirName)
+        });
+    } catch (error) {
+        console.error('Error creating directory:', error);
+        res.status(500).json({
+            success: false,
+            message: `Error creating directory: ${error.message}`
+        });
+    }
+});
+
 // API endpoint to start the crawling process
 app.post('/api/start-crawl', async (req, res) => {
     try {
@@ -53,10 +78,20 @@ app.post('/api/start-crawl', async (req, res) => {
             urlPatternForRegex = urlPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape special regex chars
         }
         
+        // Determine the correct output directory path
+        let fullOutputPath;
+        if (path.isAbsolute(outputDir)) {
+            // If an absolute path was provided, use it directly
+            fullOutputPath = outputDir;
+        } else {
+            // Otherwise, make it relative to the project root instead of the server directory
+            fullOutputPath = path.join(path.dirname(__dirname), outputDir);
+        }
+        
         // Update config.js with the new settings
         const configContent = `module.exports = {
     startUrl: '${startUrl}',
-    outputDir: '${path.join(__dirname, outputDir)}',
+    outputDir: '${fullOutputPath}',
     urlPattern: new RegExp('${urlPatternForRegex}'),
     fileFormat: '${fileFormat || 'markdown'}'
 };
@@ -66,17 +101,19 @@ app.post('/api/start-crawl', async (req, res) => {
         // Create visited URLs set for tracking
         const visitedUrls = new Set();
         
+        // Clear require.cache to ensure fresh config is loaded
+        delete require.cache[require.resolve('./config')];
+        
         // Start crawling
         await crawl(startUrl, baseDomain, visitedUrls);
         
         // Create directory if it doesn't exist
-        const outputPath = path.join(__dirname, outputDir);
-        if (!fs.existsSync(outputPath)) {
-            fs.mkdirSync(outputPath, { recursive: true });
+        if (!fs.existsSync(fullOutputPath)) {
+            fs.mkdirSync(fullOutputPath, { recursive: true });
         }
         
         // Save visited links to file
-        const visitedLinksPath = path.join(outputPath, 'visitedLinks');
+        const visitedLinksPath = path.join(fullOutputPath, 'visitedLinks');
         const visitedLinksArray = Array.from(visitedUrls);
         fs.writeFileSync(visitedLinksPath, visitedLinksArray.join('\n'), 'utf8');
         
