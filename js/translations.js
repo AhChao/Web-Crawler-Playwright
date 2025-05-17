@@ -6,10 +6,17 @@ const translations = {
         'title': 'Web 爬蟲控制面板',
         'startUrlLabel': '起始網址：',
         'baseDomainLabel': '網域：',
-        'urlPatternLabel': '限定規則 (正則表達式)：',
+        'urlPatternLabel': '限定規則：',
+        'containsLabel': '包含',
+        'regexLabel': '正則表達式',
+        'testUrlLabel': '測試網址：',
+        'testUrlBtn': '測試',
+        'testMatch': '匹配成功：URL將被爬取',
+        'testNoMatch': '匹配失敗：URL將被跳過',
         'outputDirLabel': '輸出資料夾：',
         'chooseFolder': '選擇資料夾',
         'startCrawl': '開始爬蟲',
+        'refreshConfig': '刷新配置',
         'statusText': '準備就緒，請設定參數並開始爬蟲。',
         'visitedLinksTitle': '已爬取網址列表',
         'langToggle': 'English',
@@ -23,16 +30,25 @@ const translations = {
         'crawlingError': '爬蟲過程中發生錯誤：',
         'visitedCount': '已爬取連結數量：',
         'loadingConfig': '正在載入設定...',
-        'configLoaded': '已從設定檔載入配置'
+        'configLoaded': '已從設定檔載入配置',
+        'configRefreshed': '配置已刷新',
+        'configRefreshError': '刷新配置時出錯'
     },
     'en': {
         'title': 'Web Crawler Control Panel',
         'startUrlLabel': 'Start URL:',
         'baseDomainLabel': 'Domain:',
-        'urlPatternLabel': 'URL Pattern (RegEx):',
+        'urlPatternLabel': 'URL Pattern:',
+        'containsLabel': 'Contains',
+        'regexLabel': 'Regex Pattern',
+        'testUrlLabel': 'Test URL:',
+        'testUrlBtn': 'Test',
+        'testMatch': 'Match: URL will be crawled',
+        'testNoMatch': 'No match: URL will be skipped',
         'outputDirLabel': 'Output Directory:',
         'chooseFolder': 'Choose Folder',
         'startCrawl': 'Start Crawling',
+        'refreshConfig': 'Refresh Configuration',
         'statusText': 'Ready. Please set parameters and start crawling.',
         'visitedLinksTitle': 'Visited Links',
         'langToggle': '中文',
@@ -46,7 +62,9 @@ const translations = {
         'crawlingError': 'Error during crawling: ',
         'visitedCount': 'Number of visited links: ',
         'loadingConfig': 'Loading configuration...',
-        'configLoaded': 'Configuration loaded from settings file'
+        'configLoaded': 'Configuration loaded from settings file',
+        'configRefreshed': 'Configuration refreshed',
+        'configRefreshError': 'Error refreshing configuration'
     }
 };
 

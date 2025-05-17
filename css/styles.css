@@ -43,6 +43,11 @@ button {
 button:hover {
     background-color: #45a049;
 }
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
 #status {
     margin-top: 20px;
     padding: 10px;
@@ -62,4 +67,33 @@ button:hover {
     max-height: 200px;
     overflow-y: auto;
     background-color: #ffffff;
+}
+.pattern-type {
+    display: flex;
+    gap: 15px;
+}
+
+.pattern-type label {
+    display: flex;
+    align-items: center;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+.pattern-type input {
+    margin-right: 5px;
+}
+
+.test-result {
+    margin-top: 5px;
+    font-size: 0.9em;
+    min-height: 20px;
+}
+
+.test-success {
+    color: #4CAF50;
+}
+
+.test-fail {
+    color: #F44336;
 }

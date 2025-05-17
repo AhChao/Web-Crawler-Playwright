@@ -9,6 +9,7 @@ async function startCrawling() {
     const startUrl = document.getElementById('startUrl').value;
     const baseDomain = document.getElementById('baseDomain').value;
     const urlPattern = document.getElementById('urlPattern').value;
+    const patternType = document.querySelector('input[name="patternType"]:checked').value;
     const outputDir = document.getElementById('outputDir').value;
     
     // Validate inputs
@@ -27,6 +28,7 @@ async function startCrawling() {
         startUrl,
         baseDomain,
         urlPattern,
+        patternType,
         outputDir
     };
     

@@ -14,6 +14,9 @@ app.use(express.static(path.join(__dirname, '..'))); // Serve static files from 
 // API endpoint to get the current configuration
 app.get('/api/get-config', (req, res) => {
     try {
+        // Clear the require cache to ensure we get the latest config
+        delete require.cache[require.resolve('./config')];
+        
         // Read current config.js file
         let config = require('./config');
         
@@ -24,6 +27,9 @@ app.get('/api/get-config', (req, res) => {
                 urlPattern: config.urlPattern.toString()
             };
         }
+        
+        // Add a timestamp to verify freshness
+        config.timestamp = new Date().toISOString();
         
         res.json(config);
     } catch (error) {
@@ -38,13 +44,20 @@ app.get('/api/get-config', (req, res) => {
 // API endpoint to start the crawling process
 app.post('/api/start-crawl', async (req, res) => {
     try {
-        const { startUrl, baseDomain, urlPattern, outputDir } = req.body;
+        const { startUrl, baseDomain, urlPattern, patternType, outputDir } = req.body;
+        
+        // Convert the urlPattern string to the appropriate regex format
+        let urlPatternForRegex = urlPattern;
+        if (patternType === 'contains') {
+            // If it's a "contains" pattern, escape any regex special characters
+            urlPatternForRegex = urlPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape special regex chars
+        }
         
         // Update config.js with the new settings
         const configContent = `module.exports = {
     startUrl: '${startUrl}',
     outputDir: '${path.join(__dirname, outputDir)}',
-    urlPattern: new RegExp('${urlPattern}')
+    urlPattern: new RegExp('${urlPatternForRegex}')
 };
 `;
         fs.writeFileSync(path.join(__dirname, 'config.js'), configContent);
