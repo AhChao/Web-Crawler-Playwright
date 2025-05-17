@@ -1,5 +1,6 @@
 const { chromium } = require('playwright');
 const fs = require('fs');
+const path = require('path');
 const { startUrl, outputDir, urlPattern } = require('./config'); 
 const visitedUrls = new Set(); 
 
@@ -10,7 +11,7 @@ function log(message) {
 
 // Function to save all visited links to a file
 function saveVisitedLinks(links) {
-    const filePath = `${outputDir}/visitedLinks`;
+    const filePath = path.join(outputDir, 'visitedLinks');
     const content = Array.from(links).join('\n');
     fs.writeFileSync(filePath, content, 'utf8');
     log(`Saved ${links.size} visited links to ${filePath}`);
@@ -40,7 +41,7 @@ async function crawl(url, baseDomain, urlsSet = visitedUrls) {
 
         // 儲存為 Markdown 檔案 / save as Markdown file
         const fileName = `${title.replace(/[^a-zA-Z0-9]/g, '_')}.md`;
-        const filePath = `${outputDir}/${fileName}`;
+        const filePath = path.join(outputDir, fileName);
         const markdownContent = `# ${title}\n\n- URL: ${url}\n- Timestamp: ${timestamp}\n\n${rawContent}`;
         fs.writeFileSync(filePath, markdownContent, 'utf8');
 
@@ -85,7 +86,7 @@ async function crawl(url, baseDomain, urlsSet = visitedUrls) {
 
 // 建立輸出資料夾
 if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir);
+    fs.mkdirSync(outputDir, { recursive: true });
 }
 
 // 從 startUrl 提取基礎域名

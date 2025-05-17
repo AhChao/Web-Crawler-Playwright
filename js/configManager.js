@@ -37,8 +37,10 @@ async function loadConfiguration() {
         // Set output directory
         let outputDir = config.outputDir || '';
         // Clean up path for display (show only the directory name, not the full path)
-        if (outputDir.includes('/')) {
-            outputDir = outputDir.split('/').pop();
+        // Handle both Windows and Unix-style paths
+        const lastSegmentMatch = outputDir.match(/[\/\\]([^\/\\]+)$/);
+        if (lastSegmentMatch) {
+            outputDir = lastSegmentMatch[1];
         }
         document.getElementById('outputDir').value = outputDir;
         
