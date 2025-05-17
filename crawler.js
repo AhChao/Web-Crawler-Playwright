@@ -1,16 +1,15 @@
 const { chromium } = require('playwright');
 const fs = require('fs');
-const { startUrl, outputDir } = require('./config'); // 移除 domain
-const visitedUrls = new Set(); // 已訪問的 URL 集合
+const { startUrl, outputDir, urlPattern } = require('./config'); 
+const visitedUrls = new Set(); 
 
-// 格式化日志输出
 function log(message) {
     const timestamp = new Date().toISOString();
     console.log(`[${timestamp}] ${message}`);
 }
 
 async function crawl(url, baseDomain) {
-    if (visitedUrls.has(url) || !url.includes(baseDomain)) {
+    if (visitedUrls.has(url)) {
         log(`Skipping: ${url} (already visited or not in domain)`);
         return;
     }
@@ -26,18 +25,18 @@ async function crawl(url, baseDomain) {
 
         await page.goto(url, { waitUntil: 'domcontentloaded' });
 
-        // 抓取網頁內容
+        // 抓取網頁內容 / fetch title and content
         const title = await page.title();
         const rawContent = await page.content();
         const timestamp = new Date().toISOString();
 
-        // 儲存為 Markdown 檔案
+        // 儲存為 Markdown 檔案 / save as Markdown file
         const fileName = `${title.replace(/[^a-zA-Z0-9]/g, '_')}.md`;
         const filePath = `${outputDir}/${fileName}`;
         const markdownContent = `# ${title}\n\n- URL: ${url}\n- Timestamp: ${timestamp}\n\n${rawContent}`;
         fs.writeFileSync(filePath, markdownContent, 'utf8');
 
-        // 抓取內部連結
+        // 抓取內部連結 / fetch links on the page
         links = await page.$$eval('a', (anchors, baseDomain) => {
             return anchors
                 .map(a => a.href)
@@ -57,11 +56,13 @@ async function crawl(url, baseDomain) {
         console.error(`[${new Date().toISOString()}] Error crawling ${url}:`, error);
     } finally {
         if (browser) {
-            await browser.close(); // 確保瀏覽器及時關閉
+            await browser.close(); // 確保瀏覽器及時關閉 / close playwright instace before a new crawl
         }
 
         // 遞回訪問內部連結
         for (const link of links) {
+            if (!link.includes(baseDomain)) return; // link not in base domain
+            if (!urlPattern.test(link)) return; // link does not match urlPattern
             await crawl(link, baseDomain);
         }
     }
@@ -76,6 +77,11 @@ if (!fs.existsSync(outputDir)) {
 const baseDomain = new URL(startUrl).hostname;
 
 // 開始爬蟲
-crawl(startUrl, baseDomain).then(() => {
-    log('Crawling completed.');
-});
+if (require.main === module) {
+    crawl(startUrl, baseDomain).then(() => {
+        log('Crawling completed.');
+    });
+}
+
+// 將 crawl 函數導出
+module.exports = { crawl };

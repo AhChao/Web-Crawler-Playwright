@@ -4,11 +4,15 @@
   "description": "A web crawler using Playwright to scrape and save website content as Markdown files.",
   "main": "crawler.js",
   "scripts": {
-    "start": "node crawler.js"
+    "start": "node crawler.js",
+    "test": "jest --detectOpenHandles --forceExit"
   },
   "author": "Steven Chao",
   "license": "MIT",
   "dependencies": {
     "playwright": "^1.52.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
   }
 }
