@@ -1,6 +1,6 @@
 module.exports = {
-    startUrl: 'https://google.github.io/eng-practices/review/developer/small-cls.html',
-    outputDir: '/Users/stevenchao/Documents/Repos_self/web-crawler-playwright/test-output',
-    urlPattern: new RegExp('eng-practices\/review\/developer\/small-cls.html'),
+    startUrl: 'https://google.github.io/eng-practices/',
+    outputDir: '/Users/stevenchao/Documents/Repos_self/web-crawler-playwright/google-code-review',
+    urlPattern: new RegExp('eng-practices'),
     fileFormat: 'markdown'
 };

@@ -147,7 +147,9 @@ async function chooseOutputFolder() {
         const dirHandle = await window.showDirectoryPicker({
             title: translations[currentLang]['pickerTitle']
         });
-        const outputDir = dirHandle.name;
+        
+        // Get the directory name
+        const dirName = dirHandle.name;
         
         // Request the server to create this directory and return the full path
         const response = await fetch('/api/select-dir', {
@@ -155,7 +157,7 @@ async function chooseOutputFolder() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ dirName: outputDir })
+            body: JSON.stringify({ dirName: dirName })
         });
         
         if (!response.ok) {
@@ -166,7 +168,7 @@ async function chooseOutputFolder() {
         
         // Set the path to be used when submitting the form
         document.getElementById('outputDir').value = result.relativePath;
-        updateStatus(translations[currentLang]['folderSelected'] + outputDir);
+        updateStatus(translations[currentLang]['folderSelected'] + dirName);
         
         // Store the directory handle for later use
         window.dirHandle = dirHandle;

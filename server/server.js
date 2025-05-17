@@ -46,8 +46,18 @@ app.post('/api/select-dir', (req, res) => {
     try {
         const { dirName } = req.body;
         
-        // Create the output directory if it doesn't exist
-        const outputPath = path.join(path.dirname(__dirname), 'output', dirName);
+        // Check if the dirName is an absolute path
+        let outputPath;
+        if (path.isAbsolute(dirName)) {
+            // Use the absolute path directly
+            outputPath = dirName;
+        } else {
+            // For simple directory names, create under the project root
+            // (not inside 'output' subfolder)
+            outputPath = path.join(path.dirname(__dirname), dirName);
+        }
+        
+        // Create the directory if it doesn't exist
         if (!fs.existsSync(outputPath)) {
             fs.mkdirSync(outputPath, { recursive: true });
         }
@@ -55,7 +65,8 @@ app.post('/api/select-dir', (req, res) => {
         res.json({ 
             success: true,
             outputPath: outputPath,
-            relativePath: path.join('output', dirName)
+            // Use the actual folder name without forcing an 'output' prefix
+            relativePath: dirName
         });
     } catch (error) {
         console.error('Error creating directory:', error);
