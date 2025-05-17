@@ -40,7 +40,10 @@ http://localhost:3000
 
 ## 實現細節
 
-- 前端：HTML, CSS, JavaScript
+- 前端：
+  - HTML 結構
+  - CSS 樣式（獨立文件）
+  - JavaScript 功能（模組化組織）
 - 後端：Node.js, Express
 - 網頁爬蟲：Playwright
 - 輸出：Markdown 文件和所有已訪問 URL 的列表

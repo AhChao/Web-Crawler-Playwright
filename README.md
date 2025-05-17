@@ -40,7 +40,10 @@ http://localhost:3000
 
 ## Implementation Details
 
-- Front-end: HTML, CSS, JavaScript
+- Front-end: 
+  - HTML for structure
+  - CSS for styling (in separate files)
+  - JavaScript for functionality (modular organization)
 - Back-end: Node.js, Express
 - Web Crawling: Playwright
 - Output: Markdown files and a list of all visited URLs

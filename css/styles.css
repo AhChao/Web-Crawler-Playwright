@@ -1,0 +1,65 @@
+body {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    line-height: 1.6;
+}
+.container {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.form-group {
+    margin-bottom: 15px;
+}
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+input[type="text"], input[type="url"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+input[disabled] {
+    background-color: #f2f2f2;
+    cursor: not-allowed;
+}
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-right: 10px;
+}
+button:hover {
+    background-color: #45a049;
+}
+#status {
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #f0f0f0;
+    max-height: 300px;
+    overflow-y: auto;
+}
+.lang-switch {
+    text-align: right;
+    margin-bottom: 20px;
+}
+#visitedLinks {
+    margin-top: 20px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: #ffffff;
+}
