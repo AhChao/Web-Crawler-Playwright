@@ -11,6 +11,30 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 app.use(express.static(__dirname)); // Serve static files from current directory
 
+// API endpoint to get the current configuration
+app.get('/api/get-config', (req, res) => {
+    try {
+        // Read current config.js file
+        let config = require('./config');
+        
+        // Convert RegExp to string for proper JSON response
+        if (config.urlPattern instanceof RegExp) {
+            config = {
+                ...config,
+                urlPattern: config.urlPattern.toString()
+            };
+        }
+        
+        res.json(config);
+    } catch (error) {
+        console.error('Error reading configuration:', error);
+        res.status(500).json({
+            success: false,
+            message: `Error reading configuration: ${error.message}`
+        });
+    }
+});
+
 // API endpoint to start the crawling process
 app.post('/api/start-crawl', async (req, res) => {
     try {

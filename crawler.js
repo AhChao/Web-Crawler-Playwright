@@ -69,8 +69,15 @@ async function crawl(url, baseDomain, urlsSet = visitedUrls) {
 
         // 遞回訪問內部連結
         for (const link of links) {
-            if (!link.includes(baseDomain)) continue; // link not in base domain
-            if (!urlPattern.test(link)) continue; // link does not match urlPattern
+
+            if (!link.includes(baseDomain)){
+                log(`Skipping link: ${link} (not in base domain)`);
+                continue; // link not in base domain
+            }
+            if (!urlPattern.test(link)){
+                log(`Skipping link: ${link} (does not match urlPattern)`);
+                continue; // link does not match urlPattern
+            }
             await crawl(link, baseDomain, urlsSet);
         }
     }
