@@ -8,6 +8,14 @@ function log(message) {
     console.log(`[${timestamp}] ${message}`);
 }
 
+// Function to save all visited links to a file
+function saveVisitedLinks(links) {
+    const filePath = `${outputDir}/visitedLinks`;
+    const content = Array.from(links).join('\n');
+    fs.writeFileSync(filePath, content, 'utf8');
+    log(`Saved ${links.size} visited links to ${filePath}`);
+}
+
 async function crawl(url, baseDomain) {
     if (visitedUrls.has(url)) {
         log(`Skipping: ${url} (already visited or not in domain)`);
@@ -80,6 +88,8 @@ const baseDomain = new URL(startUrl).hostname;
 if (require.main === module) {
     crawl(startUrl, baseDomain).then(() => {
         log('Crawling completed.');
+        // Save all visited links to a file
+        saveVisitedLinks(visitedUrls);
     });
 }
 
