@@ -16,13 +16,13 @@ function saveVisitedLinks(links) {
     log(`Saved ${links.size} visited links to ${filePath}`);
 }
 
-async function crawl(url, baseDomain) {
-    if (visitedUrls.has(url)) {
+async function crawl(url, baseDomain, urlsSet = visitedUrls) {
+    if (urlsSet.has(url)) {
         log(`Skipping: ${url} (already visited or not in domain)`);
         return;
     }
 
-    visitedUrls.add(url);
+    urlsSet.add(url);
     log(`Crawling: ${url}`);
 
     let browser;
@@ -69,9 +69,9 @@ async function crawl(url, baseDomain) {
 
         // 遞回訪問內部連結
         for (const link of links) {
-            if (!link.includes(baseDomain)) return; // link not in base domain
-            if (!urlPattern.test(link)) return; // link does not match urlPattern
-            await crawl(link, baseDomain);
+            if (!link.includes(baseDomain)) continue; // link not in base domain
+            if (!urlPattern.test(link)) continue; // link does not match urlPattern
+            await crawl(link, baseDomain, urlsSet);
         }
     }
 }
