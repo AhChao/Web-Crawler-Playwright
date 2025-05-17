@@ -52,6 +52,14 @@
             </div>
         </div>
         
+        <div class="form-group">
+            <label id="fileFormatLabel" for="fileFormat">檔案格式：</label>
+            <div class="format-type">
+                <label><input type="radio" name="fileFormat" value="markdown" checked> <span id="markdownLabel">Markdown</span></label>
+                <label><input type="radio" name="fileFormat" value="html"> <span id="htmlLabel">HTML</span></label>
+            </div>
+        </div>
+        
         <div class="button-group">
             <button id="startCrawl" onclick="startCrawling()">開始爬蟲</button>
             <button id="refreshConfig" onclick="refreshConfiguration()">刷新配置</button>

@@ -44,7 +44,7 @@ app.get('/api/get-config', (req, res) => {
 // API endpoint to start the crawling process
 app.post('/api/start-crawl', async (req, res) => {
     try {
-        const { startUrl, baseDomain, urlPattern, patternType, outputDir } = req.body;
+        const { startUrl, baseDomain, urlPattern, patternType, outputDir, fileFormat } = req.body;
         
         // Convert the urlPattern string to the appropriate regex format
         let urlPatternForRegex = urlPattern;
@@ -57,7 +57,8 @@ app.post('/api/start-crawl', async (req, res) => {
         const configContent = `module.exports = {
     startUrl: '${startUrl}',
     outputDir: '${path.join(__dirname, outputDir)}',
-    urlPattern: new RegExp('${urlPatternForRegex}')
+    urlPattern: new RegExp('${urlPatternForRegex}'),
+    fileFormat: '${fileFormat || 'markdown'}'
 };
 `;
         fs.writeFileSync(path.join(__dirname, 'config.js'), configContent);

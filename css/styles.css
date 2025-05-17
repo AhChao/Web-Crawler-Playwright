@@ -97,3 +97,19 @@ button:hover {
 .test-fail {
     color: #F44336;
 }
+
+.format-type {
+    display: flex;
+    gap: 15px;
+}
+
+.format-type label {
+    display: flex;
+    align-items: center;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+.format-type input {
+    margin-right: 5px;
+}

@@ -11,6 +11,7 @@ async function startCrawling() {
     const urlPattern = document.getElementById('urlPattern').value;
     const patternType = document.querySelector('input[name="patternType"]:checked').value;
     const outputDir = document.getElementById('outputDir').value;
+    const fileFormat = document.querySelector('input[name="fileFormat"]:checked').value;
     
     // Validate inputs
     if (!startUrl) {
@@ -29,7 +30,8 @@ async function startCrawling() {
         baseDomain,
         urlPattern,
         patternType,
-        outputDir
+        outputDir,
+        fileFormat
     };
     
     updateStatus(translations[currentLang]['crawlingStarted']);

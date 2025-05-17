@@ -54,6 +54,10 @@ async function loadConfiguration() {
             outputDir = lastSegmentMatch[1];
         }
         document.getElementById('outputDir').value = outputDir;
+
+        // Set file format
+        const fileFormat = config.fileFormat || 'markdown';
+        document.querySelector(`input[name="fileFormat"][value="${fileFormat}"]`).checked = true;
         
         // Show timestamp to verify refresh
         if (config.timestamp) {

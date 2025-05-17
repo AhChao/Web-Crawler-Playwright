@@ -1,7 +1,8 @@
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
-const { startUrl, outputDir, urlPattern } = require('./config'); 
+const TurndownService = require('turndown');
+const config = require('./config'); 
 const visitedUrls = new Set(); 
 
 function log(message) {
@@ -11,19 +12,22 @@ function log(message) {
 
 // Function to save all visited links to a file
 function saveVisitedLinks(links) {
-    const filePath = path.join(outputDir, 'visitedLinks');
+    const filePath = path.join(config.outputDir, 'visitedLinks');
     const content = Array.from(links).join('\n');
     fs.writeFileSync(filePath, content, 'utf8');
     log(`Saved ${links.size} visited links to ${filePath}`);
 }
 
 async function crawl(url, baseDomain, urlsSet = visitedUrls) {
-    if (urlsSet.has(url)) {
+    // Remove anchor part from URL for uniqueness check
+    const urlWithoutAnchor = url.split('#')[0];
+    
+    if (urlsSet.has(urlWithoutAnchor)) {
         log(`Skipping: ${url} (already visited or not in domain)`);
         return;
     }
 
-    urlsSet.add(url);
+    urlsSet.add(urlWithoutAnchor);
     log(`Crawling: ${url}`);
 
     let browser;
@@ -39,11 +43,51 @@ async function crawl(url, baseDomain, urlsSet = visitedUrls) {
         const rawContent = await page.content();
         const timestamp = new Date().toISOString();
 
-        // 儲存為 Markdown 檔案 / save as Markdown file
-        const fileName = `${title.replace(/[^a-zA-Z0-9]/g, '_')}.md`;
-        const filePath = path.join(outputDir, fileName);
-        const markdownContent = `# ${title}\n\n- URL: ${url}\n- Timestamp: ${timestamp}\n\n${rawContent}`;
-        fs.writeFileSync(filePath, markdownContent, 'utf8');
+        // Determine file extension and content based on fileFormat
+        const fileFormat = config.fileFormat || 'markdown'; // Default to markdown if not specified
+        const isMarkdown = fileFormat === 'markdown';
+        const fileExtension = isMarkdown ? '.md' : '.html';
+        
+        // Create file name based on title
+        const fileName = `${title.replace(/[^a-zA-Z0-9]/g, '_')}${fileExtension}`;
+        const filePath = path.join(config.outputDir, fileName);
+        
+        let contentToSave;
+        if (isMarkdown) {
+            // Convert HTML to Markdown using Turndown
+            const turndownService = new TurndownService({
+                headingStyle: 'atx',
+                codeBlockStyle: 'fenced',
+                emDelimiter: '*'
+            });
+            
+            // Extract just the body content for better markdown conversion
+            // Use page.$eval to extract only the relevant content instead of the full raw HTML
+            const bodyContent = await page.$eval('body', body => body.innerHTML);
+            
+            // Convert the body content to Markdown
+            const markdownBody = turndownService.turndown(bodyContent);
+            
+            // Add metadata at the top of the file
+            contentToSave = `# ${title}\n\n- URL: ${url}\n- Timestamp: ${timestamp}\n\n${markdownBody}`;
+        } else {
+            // Save as HTML with some metadata
+            contentToSave = `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="crawler-url" content="${url}">
+    <meta name="crawler-timestamp" content="${timestamp}">
+    <title>${title}</title>
+</head>
+<body>
+${rawContent}
+</body>
+</html>`;
+        }
+        
+        fs.writeFileSync(filePath, contentToSave, 'utf8');
+        log(`Saved ${fileFormat} file: ${filePath}`);
 
         // 抓取內部連結 / fetch links on the page
         links = await page.$$eval('a', (anchors, baseDomain) => {
@@ -75,7 +119,7 @@ async function crawl(url, baseDomain, urlsSet = visitedUrls) {
                 log(`Skipping link: ${link} (not in base domain)`);
                 continue; // link not in base domain
             }
-            if (!urlPattern.test(link)){
+            if (!config.urlPattern.test(link)){
                 log(`Skipping link: ${link} (does not match urlPattern)`);
                 continue; // link does not match urlPattern
             }
@@ -85,16 +129,16 @@ async function crawl(url, baseDomain, urlsSet = visitedUrls) {
 }
 
 // 建立輸出資料夾
-if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir, { recursive: true });
+if (!fs.existsSync(config.outputDir)) {
+    fs.mkdirSync(config.outputDir, { recursive: true });
 }
 
 // 從 startUrl 提取基礎域名
-const baseDomain = new URL(startUrl).hostname;
+const baseDomain = new URL(config.startUrl).hostname;
 
 // 開始爬蟲
 if (require.main === module) {
-    crawl(startUrl, baseDomain).then(() => {
+    crawl(config.startUrl, baseDomain).then(() => {
         log('Crawling completed.');
         // Save all visited links to a file
         saveVisitedLinks(visitedUrls);
