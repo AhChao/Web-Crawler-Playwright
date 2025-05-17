@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(bodyParser.json());
-app.use(express.static(__dirname)); // Serve static files from current directory
+app.use(express.static(path.join(__dirname, '..'))); // Serve static files from parent directory
 
 // API endpoint to get the current configuration
 app.get('/api/get-config', (req, res) => {

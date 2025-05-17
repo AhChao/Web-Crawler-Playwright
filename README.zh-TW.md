@@ -10,6 +10,20 @@
 - 查看已爬取 URL 列表
 - 結果保存為 Markdown 文件
 
+## 專案結構
+
+- **伺服器端 (server/)**
+  - `config.js` - 伺服器配置
+  - `crawler.js` - 主要爬蟲實現
+  - `server.js` - Express 伺服器
+
+- **客戶端 (瀏覽器)**
+  - `js/translations.js` - UI 語言翻譯
+  - `js/ui.js` - UI 管理功能
+  - `js/configManager.js` - 配置處理
+  - `js/crawlerClient.js` - 客戶端爬蟲交互
+  - `css/styles.css` - 界面樣式
+
 ## 安裝說明
 
 1. 克隆本倉庫

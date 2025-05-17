@@ -2,10 +2,10 @@
   "name": "web-crawler-playwright",
   "version": "1.0.0",
   "description": "A web crawler using Playwright to scrape and save website content as Markdown files.",
-  "main": "crawler.js",
+  "main": "server/crawler.js",
   "scripts": {
-    "start": "node crawler.js",
-    "server": "node server.js",
+    "start": "node server/crawler.js",
+    "server": "node server/server.js",
     "test": "jest --detectOpenHandles --forceExit"
   },
   "author": "Steven Chao",

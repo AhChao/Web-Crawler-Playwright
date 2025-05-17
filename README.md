@@ -10,6 +10,20 @@ A web crawler using Playwright to scrape and save website content as Markdown fi
 - View list of visited URLs
 - Results saved as Markdown files
 
+## Project Structure
+
+- **Server-side (server/)**
+  - `server.js` - Express server
+  - `crawler.js` - Main crawler implementation
+  - `config.js` - Server configuration
+
+- **Client-side (Browser)**
+  - `js/translations.js` - UI language translations
+  - `js/ui.js` - UI management functions
+  - `js/configManager.js` - Configuration handling
+  - `js/crawlerClient.js` - Client-side crawler interaction
+  - `css/styles.css` - Styles for the interface
+
 ## Installation
 
 1. Clone this repository
